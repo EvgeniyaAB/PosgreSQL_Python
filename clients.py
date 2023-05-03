@@ -176,7 +176,7 @@ try:
     con = psycopg2.connect(
         dbname='clients',
         user='postgres',
-        password='10fevralj02!',
+        password='',
         host='localhost',
         port='5432'
     )
@@ -188,7 +188,7 @@ try:
     # change_clients_info(con, 2, name='Mary', phone_number=55555, new_phone_number=599594030858)
     # delete_clients_number(con, 2, 55555)
     # delete_client(con, 1)
-    find_client(con, name='Mary')
+    #find_client(con, name='Mary')
 
 
 
