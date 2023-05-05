@@ -140,13 +140,13 @@ def delete_client(con, id_clients):
     cur.close()
 
 #Функция, позволяющая найти клиента по его данным (имени, фамилии, email-у или телефону)
-def find_client(conn, name=None, last_name=None, email=None, phone_number=None):
+def find_client(con, name=None, last_name=None, email=None, phone_number=None):
     cur = con.cursor()
 
     find_info_client = """SELECT name, last_name, email, phone_number
                           FROM clients
                           LEFT JOIN contacts ON clients.id = contacts.id_clients
-                          WHERE name = %s or last_name = %s or email = %s or phone_number = %s GROUP BY name, last_name"""
+                          WHERE name = %s or last_name = %s or email = %s or phone_number = %s"""
     cur.execute(find_info_client, (name, last_name, email, phone_number))
     info = cur.fetchall()
     print(*info)
