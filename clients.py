@@ -108,6 +108,7 @@ def change_clients_info(con, id_clients, name=None, last_name=None, email=None, 
         con.commit()
         count = cur.rowcount
         print(count, "Запись успешно обновлена")
+        cur.close()
 
 def delete_clients_number(con, id_clients, phone_number):
     cur = con.cursor()
@@ -123,6 +124,7 @@ def delete_clients_number(con, id_clients, phone_number):
         print(count, f"Телефон {phone_number} успешно удален")
     else:
         print(f"У клиента нет такого телефона {phone_number}")
+    cur.close()
 
 # Функция, позволяющая удалить существующего клиента
 def delete_client(con, id_clients):
@@ -135,42 +137,21 @@ def delete_client(con, id_clients):
     cur.execute(delete_client_2, (id,))
     con.commit()
     print(f"Клиент с id_client {id_clients} успешно удален из БД clients")
+    cur.close()
 
 #Функция, позволяющая найти клиента по его данным (имени, фамилии, email-у или телефону)
 def find_client(conn, name=None, last_name=None, email=None, phone_number=None):
     cur = con.cursor()
-    if name != None:
-        find_info_client = """SELECT name, last_name, email, phone_number
-                            FROM clients
-                            LEFT JOIN contacts ON clients.id = contacts.id_clients
-                            WHERE name = %s"""
-        cur.execute(find_info_client, (name,))
-        info = cur.fetchall()
-        print(f'name: {info[0][0]}, last_name: {info[0][1]}, email: {info[0][2]}, phone_number: {info[0][3]}')
-    elif last_name != None:
-        find_info_client = """SELECT name, last_name, email, phone_number
-                            FROM clients
-                            LEFT JOIN contacts ON clients.id = contacts.id_clients
-                            WHERE last_name = %s"""
-        cur.execute(find_info_client, (last_name,))
-        info = cur.fetchall()
-        print(f'name: {info[0][0]}, last_name: {info[0][1]}, email: {info[0][2]}, phone_number: {info[0][3]}')
-    elif email != None:
-        find_info_client = """SELECT name, last_name, email, phone_number
-                            FROM clients
-                            LEFT JOIN contacts ON clients.id = contacts.id_clients
-                            WHERE email = %s"""
-        cur.execute(find_info_client, (email,))
-        info = cur.fetchall()
-        print(f'name: {info[0][0]}, last_name: {info[0][1]}, email: {info[0][2]}, phone_number: {info[0][3]}')
-    elif phone_number != None:
-        find_info_client = """SELECT name, last_name, email, phone_number
-                            FROM clients
-                            LEFT JOIN contacts ON clients.id = contacts.id_clients
-                            WHERE phone_number = %s"""
-        cur.execute(find_info_client, (phone_number,))
-        info = cur.fetchall()
-        print(f'name: {info[0][0]}, last_name: {info[0][1]}, email: {info[0][2]}, phone_number: {info[0][3]}')
+
+    find_info_client = """SELECT name, last_name, email, phone_number
+                          FROM clients
+                          LEFT JOIN contacts ON clients.id = contacts.id_clients
+                          WHERE name = %s or last_name = %s or email = %s or phone_number = %s GROUP BY name, last_name"""
+    cur.execute(find_info_client, (name, last_name, email, phone_number))
+    info = cur.fetchall()
+    print(*info)
+    cur.close()
+
 
 try:
     con = psycopg2.connect(
@@ -193,7 +174,7 @@ try:
 
 
 except (Exception, Error):
-    print('Error!!')
+    print('Error!!', error)
 finally:
     if con:
         con.close()
